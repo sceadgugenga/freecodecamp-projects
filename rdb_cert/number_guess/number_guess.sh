@@ -1,9 +1,10 @@
 #!/bin/bash
-PSQL="psql --username=freecodecamp --dbname=number_guess -t --csv  --no-align -c"
-SECRET_NUMBER=$((RANDOM % 1001))
+PSQL="psql --username=freecodecamp --dbname=number_guess -t  --no-align -c"
+
+SECRET_NUMBER=$((RANDOM % 1000 + 1))
 NUMBER_OF_GUESSES=0
 GAMES_PLAYED=0
-REGEX="^[0-9] $"
+REGEX="^[0-9]+$"
 # Get user name
 echo Enter your username:
 read -r USER_NAME
@@ -30,7 +31,11 @@ fi
 
 # Prompt for initial guess
 echo "Guess the secret number between 1 and 1000:"
-read -r GUESS
+read  GUESS
+# This strips special characters
+GUESS="${GUESS// /_}"
+GUESS="${GUESS//[^[:alnum:]]/}"
+
 
 # This increments before the loop
 # in case the user is correct on the
@@ -39,7 +44,8 @@ let NUMBER_OF_GUESSES
 
 # Loop prompting user until they guess the
 # correct number
-while [[ ${GUESS} -ne ${SECRET_NUMBER} ]]; do
+
+  while [[ ${GUESS} -ne ${SECRET_NUMBER} ]]; do
     # Check if the guess is numeric
     if [[ ${GUESS} =~ ${REGEX} ]]; then
         # Give feedback of the guess
@@ -57,8 +63,12 @@ while [[ ${GUESS} -ne ${SECRET_NUMBER} ]]; do
     let NUMBER_OF_GUESSES
     # Wrong guess, so we will prompt for input again
     read -r GUESS
-done
+    # This strips special characters
+    GUESS="${GUESS// /_}"
+    GUESS="${GUESS//[^[:alnum:]]/}"
 
+
+done
 # Increment games played now that
 # game is over
 let GAMES_PLAYED
